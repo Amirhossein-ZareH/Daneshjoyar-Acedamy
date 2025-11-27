@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم انتخاب واحد دانشگاهی - دانشکده مهندسی</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/dark-mode.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>در حال بارگذاری سیستم...</p>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ورود به سیستم</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="username">شماره دانشجویی</label>
+                        <input type="text" id="username" name="username" required>
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">رمز عبور</label>
+                        <input type="password" id="password" name="password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i>
+                        ورود به سیستم
+                    </button>
+                </form>
+                <div class="auth-footer">
+                    <p>حساب کاربری ندارید؟ <a href="#" id="show-register">ثبت نام کنید</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>سیستم انتخاب واحد دانشگاه</span>
+                </div>
+                <div class="header-actions">
+                    <div class="semester-info">
+                        <span class="semester-badge">نیمسال دوم ۱۴۰۳-۱۴۰۲</span>
+                    </div>
+                    <button id="dark-mode-toggle" class="btn btn-icon" title="حالت تاریک">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-menu">
+                        <div class="user-avatar">
+                            <img src="assets/images/avatar-placeholder.png" alt="پروفایل کاربر" id="user-avatar">
+                        </div>
+                        <div class="user-info">
+                            <span id="user-name">میهمان</span>
+                            <span id="user-major">لطفاً وارد شوید</span>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-icon dropdown-toggle">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" data-page="profile">
+                                    <i class="fas fa-user"></i>
+                                    پروفایل من
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-cog"></i>
+                                    تنظیمات
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item" id="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    خروج
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="mobile-menu-toggle" class="btn btn-icon mobile-only">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active" data-page="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#courses" class="nav-link" data-page="courses">
+                            <i class="fas fa-book-open"></i>
+                            <span>لیست دروس</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#schedule" class="nav-link" data-page="schedule">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>برنامه هفتگی</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#cart" class="nav-link" data-page="cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>سبد دروس</span>
+                            <span class="badge" id="cart-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#registration" class="nav-link" data-page="registration">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>ثبت نهایی</span>
+                            <span class="badge badge-warning" id="registration-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#transcript" class="nav-link" data-page="transcript">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>کارنامه</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#profile" class="nav-link" data-page="profile">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>پروفایل دانشجویی</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="main-content">
+            <!-- Dashboard Page -->
+            <section id="dashboard-page" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        داشبورد دانشجویی
+                    </h1>
+                    <div class="page-actions">
+                        <button class="btn btn-outline" id="dashboard-export">
+                            <i class="fas fa-download"></i>
+                            خروجی گزارش
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Registration Status -->
+                <div class="card registration-status-card">
+                    <div class="card-header">
+                        <h3>وضعیت انتخاب واحد</h3>
+                        <div class="status-badge" id="registration-status">غیرفعال</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="registration-info">
+                            <div class="info-item">
+                                <span class="info-label">دوره انتخاب واحد:</span>
+                                <span class="info-value" id="registration-period">۱۴۰۳/۰۱/۲۰ - ۱۴۰۳/۰۱/۳۰</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">زمان باقیمانده:</span>
+                                <span class="info-value text-danger" id="registration-time-left">۵ روز</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">وضعیت شما:</span>
+                                <span class="info-value" id="student-registration-status">ثبت‌نام نشده</span>
+                            </div>
+                        </div>
+                        <div class="registration-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="registration-progress" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>شروع</span>
+                                <span>پایان</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" id="stats-container">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>دسترسی سریع</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <button class="action-btn" data-page="courses">
+                                <i class="fas fa-search"></i>
+                                <span>جستجوی دروس</span>
+                            </button>
+                            <button class="action-btn" data-page="cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>مدیریت سبد</span>
+                            </button>
+                            <button class="action-btn" data-page="schedule">
+                                <i class="fas fa-calendar-plus"></i>
+                                <span>برنامه‌ریزی</span>
+                            </button>
+                            <button class="action-btn" data-page="registration">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>ثبت نهایی</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity & Notifications -->
+                <div class="grid-2-col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>فعالیت‌های اخیر</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-timeline" id="activity-timeline">
+                                <!-- Activities will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>اطلاعیه‌ها</h3>
+                            <span class="badge badge-info" id="notifications-count">3</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="notifications-list" id="notifications-list">
+                                <!-- Notifications will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Courses Page -->
+            <section id="courses-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-book-open"></i>
+                        لیست دروس ارائه شده
+                    </h1>
+                    <div class="page-actions">
+                        <div class="units-info">
+                            <span>واحدهای مجاز: </span>
+                            <strong id="allowed-units">20</strong>
+                        </div>
+                        <button class="btn btn-primary" id="finalize-selection">
+                            <i class="fas fa-check-double"></i>
+                            نهایی کردن انتخاب واحد
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="search-filters">
+                            <div class="search-box">
+                                <input type="text" id="course-search" placeholder="جستجوی درس، استاد یا کد درس...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="filters-row">
+                                <select id="department-filter" class="filter-select">
+                                    <option value="">همه گروه‌ها</option>
+                                </select>
+                                <select id="day-filter" class="filter-select">
+                                    <option value="">همه روزها</option>
+                                </select>
+                                <select id="instructor-filter" class="filter-select">
+                                    <option value="">همه اساتید</option>
+                                </select>
+                                <select id="unit-filter" class="filter-select">
+                                    <option value="">همه واحدها</option>
+                                </select>
+                                <select id="course-type-filter" class="filter-select">
+                                    <option value="">همه انواع</option>
+                                    <option value="اصلی">اصلی</option>
+                                    <option value="تخصصی">تخصصی</option>
+                                    <option value="عمومی">عمومی</option>
+                                    <option value="پایه">پایه</option>
+                                </select>
+                                <button class="btn btn-outline" id="reset-filters">
+                                    <i class="fas fa-redo"></i>
+                                    بازنشانی فیلترها
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Grid -->
+                <div class="courses-container">
+                    <div class="courses-header">
+                        <div class="courses-count">
+                            <span id="courses-count">0</span> درس یافت شد
+                        </div>
+                        <div class="view-options">
+                            <button class="btn btn-outline btn-sm active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="btn btn-outline btn-sm" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="courses-grid" class="courses-grid">
+                        <!-- Courses will be populated by JavaScript -->
+                    </div>
+
+                    <div id="courses-list" class="courses-list hidden">
+                        <!-- List view will be populated by JavaScript -->
+                    </div>
+
+                    <div id="loading-courses" class="loading-state">
+                        <div class="spinner"></div>
+                        <p>در حال بارگذاری دروس...</p>
+                    </div>
+
+                    <div id="no-courses" class="empty-state hidden">
+                        <i class="fas fa-book"></i>
+                        <h3>هیچ درسی یافت نشد</h3>
+                        <p>لطفاً فیلترهای جستجو را تغییر دهید</p>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination" id="courses-pagination">
+                        <!-- Pagination will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedule Page -->
+            <section id="schedule-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        برنامه هفتگی
+                    </h1>
+                    <div class="page-actions">
+                        <button class="btn btn-outline" id="print-schedule">
+                            <i class="fas fa-print"></i>
+                            چاپ برنامه
+                        </button>
+                        <button class="btn btn-primary" id="export-schedule">
+                            <i class="fas fa-download"></i>
+                            ذخیره PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Schedule Summary -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="schedule-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">تعداد دروس:</span>
+                                <span class="summary-value" id="schedule-courses-count">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">مجموع واحدها:</span>
+                                <span class="summary-value" id="schedule-total-units">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">روزهای کلاس:</span>
+                                <span class="summary-value" id="schedule-days-count">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">ساعت کلاسی:</span>
+                                <span class="summary-value" id="schedule-hours-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Controls -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="schedule-controls">
+                            <div class="semester-selector">
+                                <label>نیمسال تحصیلی:</label>
+                                <select id="semester-select" class="filter-select">
+                                    <option value="1">نیمسال اول ۱۴۰۳-۱۴۰۲</option>
+                                    <option value="2" selected>نیمسال دوم ۱۴۰۳-۱۴۰۲</option>
+                                </select>
+                            </div>
+                            <div class="view-options">
+                                <button class="btn btn-outline active" data-view="weekly">
+                                    <i class="fas fa-calendar-week"></i>
+                                    نمایش هفتگی
+                                </button>
+                                <button class="btn btn-outline" data-view="list">
+                                    <i class="fas fa-list"></i>
+                                    نمایش لیستی
+                                </button>
+                                <button class="btn btn-outline" data-view="exam">
+                                    <i class="fas fa-file-alt"></i>
+                                    برنامه امتحانات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Schedule -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>برنامه هفتگی</h3>
+                        <div class="schedule-legend" id="schedule-legend">
+                            <!-- Legend will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="weekly-schedule" class="schedule-wrapper">
+                            <!-- Schedule will be populated by JavaScript -->
+                        </div>
+                        <div id="list-schedule" class="schedule-list hidden">
+                            <!-- List schedule will be populated by JavaScript -->
+                        </div>
+                        <div id="exam-schedule" class="exam-schedule hidden">
+                            <!-- Exam schedule will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cart Page -->
+            <section id="cart-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-shopping-cart"></i>
+                        سبد دروس انتخابی
+                    </h1>
+                    <div class="page-actions">
+                        <button class="btn btn-danger" id="clear-cart">
+                            <i class="fas fa-trash"></i>
+                            خالی کردن سبد
+                        </button>
+                        <button class="btn btn-success" id="submit-registration">
+                            <i class="fas fa-paper-plane"></i>
+                            ثبت نهایی
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary-card">
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">تعداد دروس</span>
+                            <span class="stat-value" id="cart-courses-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">مجموع واحدها</span>
+                            <span class="stat-value" id="cart-total-units">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">واحد مجاز</span>
+                            <span class="stat-value">20</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">واحد باقیمانده</span>
+                            <span class="stat-value" id="cart-remaining-units">20</span>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="cart-progress"></div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0 واحد</span>
+                            <span>20 واحد</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cart Items -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>دروس انتخابی</h3>
+                        <button class="btn btn-outline btn-sm" id="check-conflicts">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            بررسی تداخل
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="cart-items-container">
+                            <!-- Cart items will be populated by JavaScript -->
+                        </div>
+                        <div id="empty-cart" class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h3>سبد دروس خالی است</h3>
+                            <p>برای افزودن درس به سبد، از صفحه لیست دروس اقدام کنید</p>
+                            <button class="btn btn-primary" data-page="courses">
+                                <i class="fas fa-book-open"></i>
+                                مشاهده دروس
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conflict Check -->
+                <div class="card" id="conflict-check-card" style="display: none;">
+                    <div class="card-header">
+                        <h3>بررسی تداخل</h3>
+                        <span class="badge badge-danger" id="conflicts-count">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="conflict-list">
+                            <!-- Conflicts will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prerequisites Check -->
+                <div class="card" id="prerequisites-card" style="display: none;">
+                    <div class="card-header">
+                        <h3>بررسی پیش‌نیازها</h3>
+                        <span class="badge badge-warning" id="prerequisites-count">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="prerequisites-list">
+                            <!-- Prerequisites issues will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Registration Page -->
+            <section id="registration-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-clipboard-check"></i>
+                        ثبت نهایی انتخاب واحد
+                    </h1>
+                    <div class="page-actions">
+                        <button class="btn btn-outline" id="print-registration">
+                            <i class="fas fa-print"></i>
+                            چاپ فرم
+                        </button>
+                        <button class="btn btn-success" id="final-registration">
+                            <i class="fas fa-check-circle"></i>
+                            تایید و ثبت نهایی
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Registration Steps -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="registration-steps">
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-info">
+                                    <div class="step-title">بررسی سبد دروس</div>
+                                    <div class="step-description">کنترل واحدها و پیش‌نیازها</div>
+                                </div>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-info">
+                                    <div class="step-title">بررسی مالی</div>
+                                    <div class="step-description">محاسبه شهریه</div>
+                                </div>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-info">
+                                    <div class="step-title">تایید نهایی</div>
+                                    <div class="step-description">ثبت در سیستم</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Course Validation -->
+                <div class="card step-card active" data-step="1">
+                    <div class="card-header">
+                        <h3>بررسی دروس انتخابی</h3>
+                        <div class="step-status" id="step1-status">
+                            <i class="fas fa-clock"></i>
+                            در انتظار بررسی
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="validation-results">
+                            <div class="validation-item success">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="validation-content">
+                                    <h4>تعداد واحدها</h4>
+                                    <p>تعداد واحدهای انتخاب شده معتبر است (12 تا 20 واحد)</p>
+                                </div>
+                            </div>
+                            <div class="validation-item warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div class="validation-content">
+                                    <h4>پیش‌نیازها</h4>
+                                    <p>بررسی پیش‌نیازهای دروس ضروری است</p>
+                                </div>
+                            </div>
+                            <div class="validation-item error">
+                                <i class="fas fa-times-circle"></i>
+                                <div class="validation-content">
+                                    <h4>تداخل زمانی</h4>
+                                    <p>تداخل زمانی بین دروس شناسایی شد</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" id="validate-courses">
+                                <i class="fas fa-check"></i>
+                                بررسی دروس
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Financial Check -->
+                <div class="card step-card" data-step="2">
+                    <div class="card-header">
+                        <h3>بررسی مالی و محاسبه شهریه</h3>
+                        <div class="step-status" id="step2-status">
+                            <i class="fas fa-clock"></i>
+                            در انتظار بررسی
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="financial-summary">
+                            <div class="financial-item">
+                                <span>شهریه پایه:</span>
+                                <span>2,500,000 تومان</span>
+                            </div>
+                            <div class="financial-item">
+                                <span>هزینه هر واحد:</span>
+                                <span>200,000 تومان</span>
+                            </div>
+                            <div class="financial-item">
+                                <span>تعداد واحدها:</span>
+                                <span id="financial-units">0</span>
+                            </div>
+                            <div class="financial-divider"></div>
+                            <div class="financial-item total">
+                                <span>مبلغ قابل پرداخت:</span>
+                                <span id="financial-total">0 تومان</span>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-outline" id="calculate-tuition">
+                                <i class="fas fa-calculator"></i>
+                                محاسبه شهریه
+                            </button>
+                            <button class="btn btn-primary" id="proceed-to-payment">
+                                <i class="fas fa-credit-card"></i>
+                                پرداخت آنلاین
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Final Confirmation -->
+                <div class="card step-card" data-step="3">
+                    <div class="card-header">
+                        <h3>تایید و ثبت نهایی</h3>
+                        <div class="step-status" id="step3-status">
+                            <i class="fas fa-clock"></i>
+                            در انتظار تایید
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="final-summary">
+                            <div class="summary-section">
+                                <h4>خلاصه انتخاب واحد</h4>
+                                <div id="final-courses-list">
+                                    <!-- Final courses list will be populated by JavaScript -->
+                                </div>
+                            </div>
+                            <div class="summary-section">
+                                <h4>اطلاعات مالی</h4>
+                                <div class="financial-final" id="financial-final">
+                                    <!-- Final financial info will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-outline" id="edit-selection">
+                                <i class="fas fa-edit"></i>
+                                ویرایش انتخاب‌ها
+                            </button>
+                            <button class="btn btn-success" id="confirm-registration">
+                                <i class="fas fa-check-circle"></i>
+                                تایید و ثبت نهایی
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Receipt -->
+                <div class="card" id="registration-receipt" style="display: none;">
+                    <div class="card-header">
+                        <h3>رسید انتخاب واحد</h3>
+                        <div class="receipt-number">
+                            شماره رسید: <span id="receipt-id">-</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="receipt-content" id="receipt-content">
+                            <!-- Receipt content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transcript Page -->
+            <section id="transcript-page" class="page">
+                <!-- Existing transcript content -->
+            </section>
+
+            <!-- Profile Page -->
+            <section id="profile-page" class="page">
+                <!-- Existing profile content -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Course Details Modal -->
+    <div id="course-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="course-modal-title">جزئیات درس</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="course-modal-content">
+                    <!-- Course details will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="modal-close-btn">بستن</button>
+                <button class="btn btn-primary" id="add-to-cart-btn">
+                    <i class="fas fa-cart-plus"></i>
+                    افزودن به سبد
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>پرداخت آنلاین</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-info">
+                    <div class="payment-amount">
+                        <span>مبلغ قابل پرداخت:</span>
+                        <span id="payment-total">0 تومان</span>
+                    </div>
+                    <div class="payment-methods">
+                        <h4>روش پرداخت</h4>
+                        <div class="method-option">
+                            <input type="radio" id="bank-card" name="payment-method" checked>
+                            <label for="bank-card">
+                                <i class="fas fa-credit-card"></i>
+                                پرداخت با کارت بانکی
+                            </label>
+                        </div>
+                        <div class="method-option">
+                            <input type="radio" id="online-wallet" name="payment-method">
+                            <label for="online-wallet">
+                                <i class="fas fa-wallet"></i>
+                                کیف پول الکترونیکی
+                            </label>
+                        </div>
+                    </div>
+                    <div class="payment-form">
+                        <div class="form-group">
+                            <label for="card-number">شماره کارت</label>
+                            <input type="text" id="card-number" placeholder="۶۳۶۲-۱۶۱۱-۱۱۱۱-۱۱۱۱">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiry-date">تاریخ انقضا</label>
+                                <input type="text" id="expiry-date" placeholder="MM/YY">
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv2">CVV2</label>
+                                <input type="text" id="cvv2" placeholder="۱۲۳">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-payment">انصراف</button>
+                <button class="btn btn-success" id="process-payment">
+                    <i class="fas fa-lock"></i>
+                    پرداخت
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="confirmation-title">تایید عملیات</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmation-message">آیا از انجام این عمل اطمینان دارید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="confirmation-cancel">انصراف</button>
+                <button class="btn btn-primary" id="confirmation-confirm">تایید</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="scripts/database.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/courses.js"></script>
+    <script src="scripts/schedule.js"></script>
+    <script src="scripts/cart.js"></script>
+    <script src="scripts/registration.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
